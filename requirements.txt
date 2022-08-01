@@ -1,0 +1,12 @@
+geopandas==0.10.2
+rasterio==1.2.10
+affine==2.3.0
+scikit-learn==0.24.2
+numpy==1.22.4 
+scipy==1.7.3
+setuptools==57.5.0
+IPython==7.31.1
+ipykernel==6.4.2
+matplotlib==3.5.2
+click
+boto3
