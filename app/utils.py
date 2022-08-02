@@ -1,23 +1,33 @@
 import descarteslabs as dl
+
 import numpy as np
 from datetime import datetime, timedelta
 from scipy.interpolate import interp1d
+
+import boto3
+
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def get_ndvi_tseries(
     geom, 
     start_date="2019-04-01", 
     end_date="2019-10-01"
 ):
+
+    logging.info("Searching for S2 L2A scenes")
     scenes, ctx = dl.scenes.search(
         geom,
         products="esa:sentinel-2:l2a:v1",
         start_datetime=start_date,
         end_datetime=end_date,
-        limit=None
+        limit=None,
     )
-    print(f"Found {len(scenes)} scenes for specified geometry")
+    logging.info(f"Found {len(scenes)} scenes for specified geometry")
     
-    print(f"Pulling raster data from DL Catalog")
+    logging.info(f"Pulling raster data from DL Catalog")
     stack = scenes.stack(
         ["red", "nir", "cloud_mask"],
         ctx,
@@ -26,7 +36,7 @@ def get_ndvi_tseries(
         progress=False,
     )
     
-    print(f"Masking out clouds")
+    logging.info(f"Masking out clouds")
     cmask = np.repeat(
         (stack[:,-1].data==1)[:, np.newaxis],
         stack.shape[1],
@@ -35,7 +45,7 @@ def get_ndvi_tseries(
     
     stack.mask = (stack.mask) | cmask
     
-    print(f"Computing NDVI")
+    logging.info(f"Computing NDVI")
     ndvi = (stack[:,1] - stack[:,0])/(stack[:,1] + stack[:,0])
 
     ndvi_ts = np.ma.median(ndvi, axis=[1,2])
@@ -62,7 +72,7 @@ def get_ndvi_tseries(
     tseries_masked = ndvi_ts.data[~ndvi_ts.mask]
     dates_masked = np.array(dates_ts)[~ndvi_ts.mask]
     
-    print(f"Interpolating time series from dates: {dates} to new dates: {new_dates.tolist()}")
+    logging.info(f"Interpolating time series from dates: {dates} to new dates: {new_dates.tolist()}")
     
     f_interp = interp1d(
         dates_masked,

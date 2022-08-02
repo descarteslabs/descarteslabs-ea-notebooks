@@ -12,7 +12,7 @@ and run through the Jupyter notebooks in the `notebooks/` directory.
 
 The following notebooks are included:
 
-- **01_intro_to_ea.ipynb**
-- **02_scalable_data_pipelines.ipynb**
-- **03_deploying_models_at_scale.ipynb**
-- **04_building_a_flask_app.ipynb**
+- **01_intro_to_aws_ea.ipynb**
+- **02_exploring_the_api.ipynb**
+- **03_models_on_demand.ipynb**
+- **04_models_at_scale.ipynb**
